@@ -1,38 +1,32 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "@/components/util/themeProvider";
+import { Appbar } from "@/components/Appbar";
+import { Landing } from "@/components/pages/Landing";
+import Colors from "@/components/pages/Colors";
+import { Game } from "@/components/pages/Game";
+import { Create } from "@/components/pages/Create";
+import { Join } from "@/components/pages/Join";
 
 function App() {
-  const [theme, setTheme] = useState({ mode: "light", icon: "🌞" });
-
+  const [username, setUsername] = useState(
+    "Player " + Math.floor(Math.random() * 100)
+  );
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button
-          onClick={() => {
-            if (theme.mode == "light") setTheme({ mode: "dark", icon: "🌚" });
-            else setTheme({ mode: "light", icon: "🌞" });
-          }}
-        >
-          {theme.icon}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Appbar username={username} />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/create" element={<Create username={username} />} />
+            <Route path="/join" element={<Join username={username} />} />
+            <Route path="/game/:gameId" element={<Game />} />
+            <Route path="/colors" element={<Colors />} />
+            <Route path="*" element={<div>Not Found</div>} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </>
   );
 }
