@@ -20,13 +20,14 @@ export class GameManager {
     socket: Socket // io: Socket.io Server, socket: Socket.io New client Socket
   ) {
     this.io = io;
+    socket.on("disconnect", () => console.log(`${socket.id} Disconnected\n`));
     socket.on("createGame", (data) => this.createGame(data, socket));
     socket.on("joinGame", (data) => this.joinGame(data, socket));
   }
 
   createGame(data: { username: string }, socket: Socket) {
     const username = data.username || "NooBIE";
-    this.gameId = Math.random().toString(36).substring(5);
+    this.gameId = Math.random().toString(36).substring(5, 11).toUpperCase();
     this.pendingPlayer = new User(socket, username, this.gameId, socket.id);
     this.pendingPlayer.socket.join(this.gameId);
     this.io
