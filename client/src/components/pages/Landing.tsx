@@ -4,12 +4,13 @@ import { cn } from "@/lib/utils";
 import ShineBorder from "@/components/magicui/shine-border";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import { GameHeading } from "@/components/GameHeading";
+import { socket } from "@/socket";
 
 export function Landing() {
   return (
     <>
       <GameHeading />
-      <div className="flex justify-center  gap-12 mt-20 items-center ">
+      <div className="flex justify-center  gap-12 mt-20 items-center px-10 ">
         <ShineBorder
           className=" flex  h-[350px] w-[350px] justify-center items-center  rounded-lg border bg-background md:shadow-xl"
           color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}

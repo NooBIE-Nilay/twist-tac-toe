@@ -7,28 +7,28 @@ import { MagicCard } from "../magicui/magic-card";
 import { useTheme } from "../util/themeProvider";
 import { Loading } from "../ui/loading";
 import { Button } from "../ui/button";
+import { GameJoinedEventType } from "../../../../common/types";
 
-export function Join({ username }: { username: string }) {
+export function Join({
+  username,
+  events,
+}: {
+  username: string;
+  events: GameJoinedEventType[];
+}) {
   const [gameId, setGameId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { theme } = useTheme();
   useEffect(() => {
-    function gameJoinedHandler(data: { username: string; gameId: string }) {
-      if (data.username === username && data.gameId == gameId) {
+    events.forEach((event) => {
+      console.log(event);
+      if (event.id === socket.id && gameId === event.gameId) {
         setIsLoading(false);
-        navigate(`/game/${data.gameId}`);
-        return;
+        navigate(`/game/${event.gameId}`);
       }
-    }
-
-    if (!socket.connected) socket.connect();
-    socket.on("gameJoined", gameJoinedHandler);
-    return () => {
-      socket.disconnect();
-      socket.off("gameJoined");
-    };
-  }, []);
+    });
+  }, [events]);
   function joinGame() {
     if (!socket.connected) socket.connect();
     if (!gameId) return;

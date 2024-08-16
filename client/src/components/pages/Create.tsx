@@ -1,38 +1,43 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../../socket";
 import { MagicCard } from "@/components/magicui/magic-card";
 import { useTheme } from "@/components/util/themeProvider";
 import { Loading } from "@/components/ui/loading";
 import { GameHeading } from "@/components/GameHeading";
-import { socket } from "../../socket";
-import { CopyButton } from "../CopyButton";
+import { CopyButton } from "@/components/CopyButton";
+import { GameJoinedEventType } from "../../../../common/types";
 
-export function Create({ username }: { username: string }) {
+export function Create({
+  username,
+  events,
+}: {
+  username: string;
+  events: GameJoinedEventType[];
+}) {
   const navigate = useNavigate();
   const [gameId, setGameId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [copyStatus, setCopyStatus] = useState("Copy");
   useEffect(() => {
-    function handleGameJoined(data: { username: string; gameId: string }) {
-      if (data.username === username) {
-        setIsLoading(false);
-        setGameId(data.gameId);
-        return;
-      } else if (data.gameId === gameId) {
-        navigate(`/game/${data.gameId}`);
-        return;
-      }
-    }
-    if (!socket.connected) socket.connect();
     socket.emit("createGame", { username });
-    socket.on("gameJoined", handleGameJoined);
-    return () => {
-      socket.off("gameJoined", handleGameJoined);
-      socket.disconnect();
-    };
   }, []);
+  useEffect(() => {
+    events.forEach((event) => {
+      console.log(event);
+      if (event.id === socket.id) {
+        setIsLoading(false);
+        setGameId(event.gameId);
+      } else if (event.gameId === gameId) {
+        console.log(
+          event.username,
+          " Joined the game!\nRedirecting to game page..."
+        );
+        navigate(`/game/${gameId}`);
+      }
+    });
+  }, [events]);
   const { theme } = useTheme();
-
   return (
     <div>
       <GameHeading />
