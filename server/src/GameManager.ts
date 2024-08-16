@@ -30,9 +30,11 @@ export class GameManager {
     this.gameId = Math.random().toString(36).substring(5, 11).toUpperCase();
     this.pendingPlayer = new User(socket, username, this.gameId, socket.id);
     this.pendingPlayer.socket.join(this.gameId);
-    this.io
-      .to(this.gameId)
-      .emit("gameJoined", { username, gameId: this.gameId });
+    this.io.to(this.gameId).emit("gameJoined", {
+      username,
+      id: this.pendingPlayer.id,
+      gameId: this.gameId,
+    });
     this.rooms.push(this.gameId);
   }
 
@@ -44,7 +46,7 @@ export class GameManager {
       player.socket.join(gameId);
       this.io
         .to(this.gameId)
-        .emit("gameJoined", { username, gameId: this.gameId });
+        .emit("gameJoined", { username, id: player.id, gameId: this.gameId });
       const game = new Game(this.io, gameId, this.pendingPlayer, player);
       this.games.push(game);
       game.gameHandler();

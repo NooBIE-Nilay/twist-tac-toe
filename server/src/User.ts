@@ -3,7 +3,7 @@ import { Socket } from "socket.io";
 export class User {
   socket: Socket;
   username: string;
-  private id: string;
+  id: string;
   gameId: string;
   sign: string;
   constructor(socket: Socket, username: string, gameId: string, id: string) {
