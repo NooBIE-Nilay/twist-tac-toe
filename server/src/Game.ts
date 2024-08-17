@@ -67,19 +67,33 @@ export class Game {
     this.player1.socket.emit("init", {
       username: this.player1.username,
       sign: this.player1.sign,
+      id: this.player1.socket.id,
     });
     this.player2.socket.emit("init", {
       username: this.player2.username,
       sign: this.player2.sign,
+      id: this.player2.socket.id,
     });
   }
   gameHandler() {
-    this.player1.socket.on("move", (data) =>
-      this.moveHandler(data, this.player1)
-    );
-    this.player2.socket.on("move", (data) =>
-      this.moveHandler(data, this.player2)
-    );
+    this.player1.socket.on("move", (data, callback) => {
+      if (this.moveHandler(data, this.player1)) {
+        try {
+          callback({ message: "Move Successful", status: 200 });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+    this.player2.socket.on("move", (data, callback) => {
+      if (this.moveHandler(data, this.player2)) {
+        try {
+          callback({ message: "Move Successful", status: 200 });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
   }
   checkWin() {
     console.log(this.board);
@@ -112,7 +126,7 @@ export class Game {
     }
   }
 
-  isValid(move: string) {
+  isValid(player: User, move: string) {
     console.log("isV Move", move);
     if (
       !move ||
@@ -125,7 +139,7 @@ export class Game {
       )
     ) {
       this.io
-        .to(this.id)
+        .to(player.socket.id)
         .emit("error", { message: "Move Not Valid", errorCode: 304 });
       return false;
     }
@@ -135,11 +149,11 @@ export class Game {
   isTurn(player: User) {
     if (player === this.turn) return true;
     this.io
-      .to(this.id)
+      .to(player.socket.id)
       .emit("error", { message: "Not Your Turn", errorCode: 303 });
     return false;
   }
-  //@ts-ignore
+
   initMove(data: { move: string }, player: User) {
     const move = Number(data.move);
     if (player.sign === "X") {
@@ -171,12 +185,18 @@ export class Game {
   }
   moveHandler(data: { move: string }, player: User) {
     if (this.isTurn(player)) {
-      if (this.isValid(data.move)) {
+      if (this.isValid(player, data.move)) {
         console.log(player.sign, "Marked", data.move);
-        player.socket.to(this.id).emit("move", data);
+        player.socket.to(this.id).emit("move", {
+          move: data.move,
+          id: player.socket.id,
+          username: player.username,
+        });
         this.initMove(data, player);
         this.turn = player === this.player1 ? this.player2 : this.player1;
+        return true;
       }
     }
+    return false;
   }
 }
