@@ -1,3 +1,4 @@
+import { socket } from "@/socket";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -17,13 +18,25 @@ export function Game({
     cell.innerText = sign;
     // setTurn((turn) => (turn === "X" ? "O" : "X"));
   }, [moveEvent]);
-  function moveListener(event: any) {
+  async function moveListener(event: any) {
     console.log(turn);
-    console.log(sign);
     if (turn) {
       const cell = event.target;
-      cell.innerText = sign;
-      setTurn((turn) => !turn);
+      try {
+        const res = await socket
+          .timeout(1000)
+          .emitWithAck("move", { move: cell.id });
+        if (res.status === 200) {
+          cell.innerText = sign;
+          setTurn((turn) => !turn);
+        } else {
+          console.log("Invalid Move", res);
+        }
+      } catch (e: Error | any) {
+        if (e.message === "timeout") {
+          console.log("Timeout");
+        }
+      }
     }
   }
   return (
