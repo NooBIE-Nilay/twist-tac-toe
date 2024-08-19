@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import ShineBorder from "@/components/magicui/shine-border";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import { GameHeading } from "@/components/GameHeading";
-import { socket } from "@/socket";
 
 export function Landing() {
   return (

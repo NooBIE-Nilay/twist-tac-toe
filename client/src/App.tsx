@@ -20,6 +20,7 @@ function App() {
     GameJoinedEventType[]
   >([]);
   const [moveEvent, setMoveEvent] = useState({
+    type: "",
     move: "",
     id: "",
     username: "",
@@ -36,9 +37,13 @@ function App() {
   function moveHandler(data: { move: string; id: string; username: string }) {
     console.log(data);
     if (socket.id !== data.id) {
-      setMoveEvent(data);
+      setMoveEvent({ ...data, type: "move" });
       setTurn((turn) => !turn);
     }
+  }
+  function removeHandler(data: { move: string; id: string; username: string }) {
+    console.log("Remove", data);
+    setMoveEvent({ ...data, type: "remove" });
   }
   useEffect(() => {
     socket.on("gameJoined", gameJoinedHandler);
@@ -50,8 +55,10 @@ function App() {
   }, [gameJoinedEvents]);
   useEffect(() => {
     socket.on("move", moveHandler);
+    socket.on("remove", removeHandler);
     return () => {
       socket.off("move", moveHandler);
+      socket.off("remove", removeHandler);
     };
   }, [moveEvent]);
   return (
