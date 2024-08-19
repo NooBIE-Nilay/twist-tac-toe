@@ -35,8 +35,8 @@ export class Game {
     removeGame(this.id);
     this.player1.socket.leave(this.id);
     this.player2.socket.leave(this.id);
-    this.player1.socket.disconnect();
-    this.player2.socket.disconnect();
+    // this.player1.socket.disconnect();
+    // this.player2.socket.disconnect();
     this.turn = {} as User;
     this.id = "";
     this.player1 = {} as User;
