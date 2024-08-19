@@ -46,6 +46,12 @@ function App() {
     setMoveEvent({ ...data, type: "remove" });
   }
   useEffect(() => {
+    if (!socket.connected) socket.connect();
+    return () => {
+      // socket.disconnect();
+    };
+  }, [gameJoinedEvents, moveEvent]);
+  useEffect(() => {
     socket.on("gameJoined", gameJoinedHandler);
     socket.on("init", initHandler);
     return () => {

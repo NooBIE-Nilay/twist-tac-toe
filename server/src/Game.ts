@@ -163,7 +163,7 @@ export class Game {
         console.log("After", this.queueX);
         this.board[removed] = "";
         console.log(player.sign, removed);
-        player.socket.emit("remove", { move: removed });
+        this.io.to(this.id).emit("remove", { move: removed.toString() });
       }
       this.board[move] = "X";
       this.queueX.push(move);
