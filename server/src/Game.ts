@@ -115,13 +115,17 @@ export class Game {
         this.board[a] === this.board[c]
       ) {
         console.log("Winner is", this.turn.username + " " + this.turn.sign);
-        this.io.to(this.id).emit("win", {
-          winner: this.turn.username,
-          id: this.turn.socket.id,
-          message: `Winner is ${this.turn.username} ${this.turn.sign}`,
-        });
-        this.destroyGame();
-        return;
+        try {
+          this.io.to(this.id).emit("win", {
+            winner: this.turn.username,
+            id: this.turn.socket.id,
+            message: `Winner is ${this.turn.username} ${this.turn.sign}`,
+          });
+          this.destroyGame();
+          return;
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
   }
@@ -138,20 +142,28 @@ export class Game {
         this.board[Number(move)] === ""
       )
     ) {
-      this.io
-        .to(player.socket.id)
-        .emit("error", { message: "Move Not Valid", errorCode: 304 });
-      return false;
+      try {
+        this.io
+          .to(player.socket.id)
+          .emit("error", { message: "Move Not Valid", errorCode: 304 });
+        return false;
+      } catch (e) {
+        console.error(e);
+      }
     }
     console.log("Valid Move");
     return true;
   }
   isTurn(player: User) {
     if (player === this.turn) return true;
-    this.io
-      .to(player.socket.id)
-      .emit("error", { message: "Not Your Turn", errorCode: 303 });
-    return false;
+    try {
+      this.io
+        .to(player.socket.id)
+        .emit("error", { message: "Not Your Turn", errorCode: 303 });
+      return false;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   initMove(data: { move: string }, player: User) {
@@ -174,7 +186,7 @@ export class Game {
         console.log("After: ", this.queueO);
         this.board[removed] = "";
         console.log(player.sign, removed);
-        player.socket.emit("remove", removed);
+        this.io.to(this.id).emit("remove", { move: removed.toString() });
       }
       this.board[move] = "O";
       this.queueO.push(move);
@@ -187,11 +199,15 @@ export class Game {
     if (this.isTurn(player)) {
       if (this.isValid(player, data.move)) {
         console.log(player.sign, "Marked", data.move);
-        player.socket.to(this.id).emit("move", {
-          move: data.move,
-          id: player.socket.id,
-          username: player.username,
-        });
+        try {
+          player.socket.to(this.id).emit("move", {
+            move: data.move,
+            id: player.socket.id,
+            username: player.username,
+          });
+        } catch (e) {
+          console.error(e);
+        }
         this.initMove(data, player);
         this.turn = player === this.player1 ? this.player2 : this.player1;
         return true;
