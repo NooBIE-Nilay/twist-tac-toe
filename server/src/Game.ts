@@ -35,8 +35,6 @@ export class Game {
     removeGame(this.id);
     this.player1.socket.leave(this.id);
     this.player2.socket.leave(this.id);
-    // this.player1.socket.disconnect();
-    // this.player2.socket.disconnect();
     this.turn = {} as User;
     this.id = "";
     this.player1 = {} as User;
@@ -196,6 +194,7 @@ export class Game {
     this.checkWin();
   }
   moveHandler(data: { move: string }, player: User) {
+    if (!player) return;
     if (this.isTurn(player)) {
       if (this.isValid(player, data.move)) {
         console.log(player.sign, "Marked", data.move);

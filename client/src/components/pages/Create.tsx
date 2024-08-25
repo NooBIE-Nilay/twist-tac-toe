@@ -24,7 +24,6 @@ export function Create({
   }, []);
   useEffect(() => {
     events.forEach((event) => {
-      console.log(event);
       if (event.id === socket.id) {
         setIsLoading(false);
         setGameId(event.gameId);

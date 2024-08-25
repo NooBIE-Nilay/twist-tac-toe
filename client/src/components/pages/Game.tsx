@@ -1,16 +1,20 @@
 import { socket } from "@/socket";
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export function Game({
   sign,
   moveEvent,
   turnState,
+  winEvent,
 }: {
   sign: string;
   moveEvent: { move: string; id: string; username: string; type: string };
   turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
+  winEvent: { winner: string; id: string; message: string };
 }) {
+  const navigate = useNavigate();
   const { gameId } = useParams();
   const [turn, setTurn] = turnState;
   useEffect(() => {
@@ -21,11 +25,33 @@ export function Game({
       cell.innerText = "";
     }
   }, [moveEvent]);
+  useEffect(() => {
+    if (!winEvent.winner || winEvent.winner === "") return;
+    console.log(winEvent);
+    let dur = 5;
+    toast.info(winEvent.message, {});
+    const id = toast.info(`Redirecting in ${dur} Seconds`);
+    const interval = setInterval(() => {
+      dur--;
+      toast.info(`Redirecting in ${dur} Seconds`, { id: id });
+      if (dur === 0) {
+        clearInterval(interval);
+        toast.dismiss();
+        navigate("/");
+      }
+    }, 1000);
+    const gameGrid = document.getElementsByClassName("cells");
+    for (let i = 0; i < gameGrid.length; i++) {
+      const cell = gameGrid.item(i) as HTMLLIElement;
+      if (cell) {
+        cell.style.cursor = "not-allowed";
+      }
+    }
+  }, [winEvent]);
   async function moveListener(event: any) {
-    console.log(turn);
+    if (winEvent.winner) return;
     if (turn) {
       const cell = event.target;
-      console.log(cell);
       try {
         const res = await socket
           .timeout(1000)
@@ -45,23 +71,30 @@ export function Game({
   }
   return (
     <div>
-      Game: {gameId}
-      <h1>Your Sign: {sign}</h1>
-      <h1>Turn: {turn ? "Your Turn" : "Opponent's Turn"}</h1>
-      <div className="flex justify-center mt-[10%]">
+      {!winEvent.winner && (
+        <div className="flex flex-col justify-center items-center">
+          <h1 className="font-bold text-2xl">GameId: {gameId}</h1>
+          <h1 className="font-semibold text-2xl">Your Sign: {sign}</h1>
+          <h1 className="font-semibold text-2xl">
+            {turn ? "Your Turn" : "Opponent's Turn"}
+          </h1>
+        </div>
+      )}
+      {winEvent.winner && (
+        <h1>{winEvent.id === socket.id ? "You Won!" : "Game Over!"}</h1>
+      )}
+      <div className="flex justify-center mt-[10%] ">
         <div>
-          <div className="grid grid-cols-3 w-[144px]  justify-center items-centers">
+          <div className="grid grid-cols-3 justify-center items-centers gap-0">
             {Array(9)
               .fill(0)
               .map((_, i) => (
                 <div
-                  className="w-[48px] h-[49px] border-solid border-white border-2  my-[1px]  flex text-center  items-center justify-center cursor-pointer"
+                  className="cells w-[68px] h-[68px] border-solid border-primary border-2    flex text-center  items-center justify-center cursor-pointer text-2xl "
                   key={i}
                   id={i.toString()}
                   onClick={moveListener}
-                >
-                  {i}
-                </div>
+                ></div>
               ))}
           </div>
         </div>

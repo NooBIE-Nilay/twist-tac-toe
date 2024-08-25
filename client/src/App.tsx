@@ -25,7 +25,20 @@ function App() {
     id: "",
     username: "",
   });
+  const [winEvent, setWinEvent] = useState({ winner: "", id: "", message: "" });
+  function resetGame() {
+    setWinEvent({ winner: "", id: "", message: "" });
+    setMoveEvent({
+      type: "",
+      move: "",
+      id: "",
+      username: "",
+    });
+    setSign("");
+    setTurn(false);
+  }
   function gameJoinedHandler(data: GameJoinedEventType) {
+    resetGame();
     setGameJoinedEvents((prev) => [...prev, data]);
   }
   function initHandler({ id, sign }: { id: string; sign: string }) {
@@ -35,7 +48,6 @@ function App() {
     }
   }
   function moveHandler(data: { move: string; id: string; username: string }) {
-    console.log(data);
     if (socket.id !== data.id) {
       setMoveEvent({ ...data, type: "move" });
       setTurn((turn) => !turn);
@@ -45,11 +57,14 @@ function App() {
     console.log("Remove", data);
     setMoveEvent({ ...data, type: "remove" });
   }
+  function winHandler(data: { winner: string; id: string; message: string }) {
+    setWinEvent(data);
+    console.log(data.message);
+    setGameJoinedEvents([]);
+  }
+
   useEffect(() => {
     if (!socket.connected) socket.connect();
-    return () => {
-      // socket.disconnect();
-    };
   }, [gameJoinedEvents, moveEvent]);
   useEffect(() => {
     socket.on("gameJoined", gameJoinedHandler);
@@ -67,6 +82,13 @@ function App() {
       socket.off("remove", removeHandler);
     };
   }, [moveEvent]);
+  useEffect(() => {
+    socket.on("win", winHandler);
+
+    return () => {
+      socket.off("win", winHandler);
+    };
+  }, [winEvent]);
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -89,6 +111,7 @@ function App() {
                   sign={sign}
                   moveEvent={moveEvent}
                   turnState={[turn, setTurn]}
+                  winEvent={winEvent}
                 />
               }
             />
