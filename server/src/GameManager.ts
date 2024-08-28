@@ -61,6 +61,7 @@ export class GameManager {
         id: this.randomPlayerWaiting.id,
         gameId: gameId,
         message: "Waiting For Another Player To Join!",
+        playersJoined: 1,
       });
       this.rooms.push(gameId);
       return;
@@ -69,9 +70,13 @@ export class GameManager {
     if (this.rooms.includes(gameId)) {
       const player = new User(client, username, gameId, client.id);
       player.client.join(gameId);
-      this.server
-        .to(gameId)
-        .emit("gameJoined", { username, id: player.id, gameId });
+      this.server.to(gameId).emit("gameJoined", {
+        username,
+        id: player.id,
+        gameId,
+        message: "Another Player Joined!",
+        playersJoined: 2,
+      });
       const game = new Game(
         this.server,
         gameId,
@@ -98,6 +103,7 @@ export class GameManager {
       id: this.pendingPlayer.id,
       gameId: gameId,
       message: "Waiting For Another Player To Join!",
+      playersJoined: 1,
     });
     this.rooms.push(gameId);
   }
@@ -113,9 +119,13 @@ export class GameManager {
     if (this.rooms.includes(gameId)) {
       const player = new User(client, username, gameId, client.id);
       player.client.join(gameId);
-      this.server
-        .to(gameId)
-        .emit("gameJoined", { username, id: player.id, gameId });
+      this.server.to(gameId).emit("gameJoined", {
+        username,
+        id: player.id,
+        gameId,
+        message: "Another Player Joined!",
+        playersJoined: 2,
+      });
       const game = new Game(this.server, gameId, this.pendingPlayer, player);
       this.games.push(game);
       game.gameHandler();
