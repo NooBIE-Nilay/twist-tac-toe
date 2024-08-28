@@ -98,7 +98,23 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route
               path="/create"
-              element={<Create username={username} events={gameJoinedEvents} />}
+              element={
+                <Create
+                  username={username}
+                  events={gameJoinedEvents}
+                  randomGame={false}
+                />
+              }
+            />
+            <Route
+              path="/create_random"
+              element={
+                <Create
+                  username={username}
+                  events={gameJoinedEvents}
+                  randomGame
+                />
+              }
             />
             <Route
               path="/join"

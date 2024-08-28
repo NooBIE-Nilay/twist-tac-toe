@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import ShineBorder from "@/components/magicui/shine-border";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import { GameHeading } from "@/components/GameHeading";
-import { socket } from "@/socket";
 
 export function Landing() {
   return (
@@ -64,7 +63,20 @@ export function Landing() {
           </svg>
         </ShineBorder>
         <div className="flex h-[400px] flex-col  justify-center items-center w-[500px] gap-6 ">
-          <div className="z-10 flex items-center justify-center">
+          <div className="z-10 flex flex-col gap-6 items-center justify-center ">
+            <Link to="/create_random">
+              <AnimatedGradientText className="text-xl w-full ">
+                🎮 <hr className="mx-2 h-8 w-[1px] shrink-0 bg-gray-300" />{" "}
+                <span
+                  className={cn(
+                    `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent text-xl `
+                  )}
+                >
+                  Quick Start
+                </span>
+                <ChevronRight className="ml-1 size-6 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+              </AnimatedGradientText>
+            </Link>
             <Link to="/create">
               <AnimatedGradientText className="text-xl">
                 🎮 <hr className="mx-2 h-8 w-[1px] shrink-0 bg-gray-300" />{" "}

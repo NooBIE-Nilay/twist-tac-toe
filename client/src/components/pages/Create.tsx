@@ -11,15 +11,22 @@ import { GameJoinedEventType } from "../../../../common/types";
 export function Create({
   username,
   events,
+  randomGame = false,
 }: {
   username: string;
   events: GameJoinedEventType[];
+  randomGame: boolean;
 }) {
   const navigate = useNavigate();
   const [gameId, setGameId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [copyStatus, setCopyStatus] = useState("Copy");
+  const [message, setMessage] = useState("");
   useEffect(() => {
+    if (randomGame) {
+      socket.emit("joinRandomGame", { username });
+      return;
+    }
     socket.emit("createGame", { username });
   }, []);
   useEffect(() => {
@@ -27,7 +34,8 @@ export function Create({
       if (event.id === socket.id) {
         setIsLoading(false);
         setGameId(event.gameId);
-      } else if (event.gameId === gameId) {
+        setMessage(event.message);
+      } else if (event.gameId === gameId && event.playersJoined >= 2) {
         console.log(
           event.username,
           " Joined the game!\nRedirecting to game page..."
@@ -63,6 +71,9 @@ export function Create({
                   </div>
                 )}
               </div>
+            </div>
+            <div className="flex justify-center items-center mt-3">
+              <span className="text-xl ">{message}</span>
             </div>
           </MagicCard>
         </div>
