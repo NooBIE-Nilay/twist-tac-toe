@@ -3,7 +3,7 @@ import { User } from "./User";
 import { removeGame } from ".";
 
 export class Game {
-  io: Server;
+  server: Server;
   id: string;
   private turn: User;
   private player1: User;
@@ -12,8 +12,8 @@ export class Game {
   private queueX: number[];
   private queueO: number[];
 
-  constructor(io: Server, id: string, player1: User, player2: User) {
-    (this.io = io), (this.turn = player1);
+  constructor(server: Server, id: string, player1: User, player2: User) {
+    (this.server = server), (this.turn = player1);
     this.id = id;
     this.player1 = player1;
     this.player2 = player2;
@@ -33,8 +33,8 @@ export class Game {
   destroyGame() {
     console.log("Game destroyed", this.id);
     removeGame(this.id);
-    this.player1.socket.leave(this.id);
-    this.player2.socket.leave(this.id);
+    this.player1.client.leave(this.id);
+    this.player2.client.leave(this.id);
     this.turn = {} as User;
     this.id = "";
     this.player1 = {} as User;
@@ -54,27 +54,31 @@ export class Game {
       this.player2.sign = "X";
       this.player1.sign = "O";
     }
-    console.log(
-      "Game initialized",
-      this.id,
-      "Turn:",
-      this.turn.username,
-      "Random: ",
-      random
-    );
-    this.player1.socket.emit("init", {
-      username: this.player1.username,
-      sign: this.player1.sign,
-      id: this.player1.socket.id,
-    });
-    this.player2.socket.emit("init", {
-      username: this.player2.username,
-      sign: this.player2.sign,
-      id: this.player2.socket.id,
-    });
+    // console.log(
+    //   "Game initialized",
+    //   this.id,
+    //   "Turn:",
+    //   this.turn.username,
+    //   "Random: ",
+    //   random
+    // );
+    try {
+      this.player1.client.emit("init", {
+        username: this.player1.username,
+        sign: this.player1.sign,
+        id: this.player1.client.id,
+      });
+      this.player2.client.emit("init", {
+        username: this.player2.username,
+        sign: this.player2.sign,
+        id: this.player2.client.id,
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
   gameHandler() {
-    this.player1.socket.on("move", (data, callback) => {
+    this.player1.client.on("move", (data, callback) => {
       if (this.moveHandler(data, this.player1)) {
         try {
           callback({ message: "Move Successful", status: 200 });
@@ -83,7 +87,7 @@ export class Game {
         }
       }
     });
-    this.player2.socket.on("move", (data, callback) => {
+    this.player2.client.on("move", (data, callback) => {
       if (this.moveHandler(data, this.player2)) {
         try {
           callback({ message: "Move Successful", status: 200 });
@@ -114,9 +118,9 @@ export class Game {
       ) {
         console.log("Winner is", this.turn.username + " " + this.turn.sign);
         try {
-          this.io.to(this.id).emit("win", {
+          this.server.to(this.id).emit("win", {
             winner: this.turn.username,
-            id: this.turn.socket.id,
+            id: this.turn.client.id,
             message: `Winner is ${this.turn.username} ${this.turn.sign}`,
           });
           this.destroyGame();
@@ -141,8 +145,8 @@ export class Game {
       )
     ) {
       try {
-        this.io
-          .to(player.socket.id)
+        this.server
+          .to(player.client.id)
           .emit("error", { message: "Move Not Valid", errorCode: 304 });
         return false;
       } catch (e) {
@@ -155,8 +159,8 @@ export class Game {
   isTurn(player: User) {
     if (player === this.turn) return true;
     try {
-      this.io
-        .to(player.socket.id)
+      this.server
+        .to(player.client.id)
         .emit("error", { message: "Not Your Turn", errorCode: 303 });
       return false;
     } catch (e) {
@@ -173,7 +177,11 @@ export class Game {
         console.log("After", this.queueX);
         this.board[removed] = "";
         console.log(player.sign, removed);
-        this.io.to(this.id).emit("remove", { move: removed.toString() });
+        try {
+          this.server.to(this.id).emit("remove", { move: removed.toString() });
+        } catch (e) {
+          console.error(e);
+        }
       }
       this.board[move] = "X";
       this.queueX.push(move);
@@ -184,7 +192,11 @@ export class Game {
         console.log("After: ", this.queueO);
         this.board[removed] = "";
         console.log(player.sign, removed);
-        this.io.to(this.id).emit("remove", { move: removed.toString() });
+        try {
+          this.server.to(this.id).emit("remove", { move: removed.toString() });
+        } catch (e) {
+          console.error(e);
+        }
       }
       this.board[move] = "O";
       this.queueO.push(move);
@@ -199,9 +211,9 @@ export class Game {
       if (this.isValid(player, data.move)) {
         console.log(player.sign, "Marked", data.move);
         try {
-          player.socket.to(this.id).emit("move", {
+          player.client.to(this.id).emit("move", {
             move: data.move,
-            id: player.socket.id,
+            id: player.client.id,
             username: player.username,
           });
         } catch (e) {
