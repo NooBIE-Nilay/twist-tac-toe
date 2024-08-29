@@ -14,6 +14,10 @@ export function Game({
   turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   winEvent: { winner: string; id: string; message: string };
 }) {
+  useEffect(() => {
+    if ((sign = "")) {
+    }
+  }, []);
   const navigate = useNavigate();
   const { gameId } = useParams();
   const [turn, setTurn] = turnState;

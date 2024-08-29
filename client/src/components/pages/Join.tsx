@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "@/socket";
 import { GameHeading } from "@/components/GameHeading";
 import { InputCodePattern } from "@/components/InputCodePattern";
@@ -16,10 +16,11 @@ export function Join({
   username: string;
   events: GameJoinedEventType[];
 }) {
-  const [gameId, setGameId] = useState("");
+  const [gameId, setGameId] = useState(useParams().joinId || "");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { theme } = useTheme();
+
   useEffect(() => {
     events.forEach((event) => {
       console.log(event);
@@ -50,7 +51,7 @@ export function Join({
             <div className="flex flex-col gap-6  text-wrap justify-center ">
               <span className="capitalize text-4xl">Enter Game Code:</span>
               <div className="inline-flex gap-5">
-                <InputCodePattern setCode={setGameId} />
+                <InputCodePattern setCode={setGameId} value={gameId} />
                 <Button variant="outline" onClick={joinGame}>
                   Join Game
                 </Button>

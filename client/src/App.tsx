@@ -121,6 +121,10 @@ function App() {
               element={<Join username={username} events={gameJoinedEvents} />}
             />
             <Route
+              path="/join/:joinId"
+              element={<Join username={username} events={gameJoinedEvents} />}
+            />
+            <Route
               path="/game/:gameId"
               element={
                 <Game

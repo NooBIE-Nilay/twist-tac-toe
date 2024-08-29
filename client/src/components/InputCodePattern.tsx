@@ -8,11 +8,14 @@ import {
 
 export function InputCodePattern({
   setCode,
+  value = "",
 }: {
   setCode: (code: string) => void;
+  value: string;
 }) {
   return (
     <InputOTP
+      value={value}
       maxLength={6}
       pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
       onChange={(value) => setCode(value)}
