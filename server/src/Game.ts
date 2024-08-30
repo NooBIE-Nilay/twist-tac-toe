@@ -13,13 +13,19 @@ export class Game {
   private queueO: number[];
 
   constructor(server: Server, id: string, player1: User, player2: User) {
-    (this.server = server), (this.turn = player1);
+    this.server = server;
+    this.turn = player1;
     this.id = id;
-    this.player1 = player1;
-    this.player2 = player2;
     this.board = [];
     this.queueO = [];
     this.queueX = [];
+    this.player1 = player1;
+    this.player2 = player2;
+    if (player1 === undefined || player2 === undefined) {
+      console.log("Cannot Create Game, User Invalid!");
+      console.log("Player1:", player1, "Player2:", player2);
+      return;
+    }
     console.log(
       "Game created",
       this.id,
@@ -37,8 +43,6 @@ export class Game {
     this.player2.client.leave(this.id);
     this.turn = {} as User;
     this.id = "";
-    this.player1 = {} as User;
-    this.player2 = {} as User;
     this.board = [];
     this.queueO = [];
     this.queueX = [];
@@ -78,24 +82,28 @@ export class Game {
     }
   }
   gameHandler() {
-    this.player1.client.on("move", (data, callback) => {
-      if (this.moveHandler(data, this.player1)) {
-        try {
-          callback({ message: "Move Successful", status: 200 });
-        } catch (e) {
-          console.error(e);
+    try {
+      this.player1.client.on("move", (data, callback) => {
+        if (this.moveHandler(data, this.player1)) {
+          try {
+            callback({ message: "Move Successful", status: 200 });
+          } catch (e) {
+            console.error(e);
+          }
         }
-      }
-    });
-    this.player2.client.on("move", (data, callback) => {
-      if (this.moveHandler(data, this.player2)) {
-        try {
-          callback({ message: "Move Successful", status: 200 });
-        } catch (e) {
-          console.error(e);
+      });
+      this.player2.client.on("move", (data, callback) => {
+        if (this.moveHandler(data, this.player2)) {
+          try {
+            callback({ message: "Move Successful", status: 200 });
+          } catch (e) {
+            console.error(e);
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
   checkWin() {
     console.log(this.board);
@@ -113,6 +121,7 @@ export class Game {
       const [a, b, c] = pattern;
       if (
         this.board[a] !== undefined &&
+        this.board[a] !== "" &&
         this.board[a] === this.board[b] &&
         this.board[a] === this.board[c]
       ) {
@@ -128,6 +137,7 @@ export class Game {
         } catch (e) {
           console.error(e);
         }
+        break;
       }
     }
   }

@@ -67,7 +67,10 @@ export class GameManager {
       return;
     }
     const gameId = this.randomPlayerWaiting.gameId;
-    if (this.rooms.includes(gameId)) {
+    if (
+      this.rooms.includes(gameId) &&
+      this.randomPlayerWaiting.id != client.id
+    ) {
       const player = new User(client, username, gameId, client.id);
       player.client.join(gameId);
       this.server.to(gameId).emit("gameJoined", {
