@@ -32,10 +32,14 @@ export function Create({
   useEffect(() => {
     events.forEach((event) => {
       if (event.id === socket.id) {
+        console.log(event);
+        console.log(socket.id);
         setIsLoading(false);
         setGameId(event.gameId);
         setMessage(event.message);
-        if (event.playersJoined >= 2) navigate(`/game/${event.gameId}`);
+        // if (event.playersJoined >= 2) {
+        //   // navigate(`/game/${event.gameId}`);
+        // }
       } else if (event.gameId === gameId && event.playersJoined >= 2) {
         console.log(
           event.username,

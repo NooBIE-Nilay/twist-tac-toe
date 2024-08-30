@@ -16,6 +16,7 @@ export function Game({
 }) {
   useEffect(() => {
     if ((sign = "")) {
+      console.log("Here");
     }
   }, []);
   const navigate = useNavigate();
