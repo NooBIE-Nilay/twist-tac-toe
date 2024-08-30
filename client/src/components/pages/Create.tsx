@@ -37,9 +37,9 @@ export function Create({
         setIsLoading(false);
         setGameId(event.gameId);
         setMessage(event.message);
-        // if (event.playersJoined >= 2) {
-        //   // navigate(`/game/${event.gameId}`);
-        // }
+        if (event.playersJoined >= 2) {
+          navigate(`/game/${event.gameId}`);
+        }
       } else if (event.gameId === gameId && event.playersJoined >= 2) {
         console.log(
           event.username,

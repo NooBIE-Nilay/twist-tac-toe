@@ -64,7 +64,7 @@ export function Landing() {
         </ShineBorder>
         <div className="flex h-[400px] flex-col  justify-center items-center w-[500px] gap-6 ">
           <div className="z-10 flex flex-col gap-6 items-center justify-center ">
-            <Link to="/create_random">
+            {/* <Link to="/create_random">
               <AnimatedGradientText className="text-xl w-full ">
                 🎮 <hr className="mx-2 h-8 w-[1px] shrink-0 bg-gray-300" />{" "}
                 <span
@@ -76,7 +76,7 @@ export function Landing() {
                 </span>
                 <ChevronRight className="ml-1 size-6 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
               </AnimatedGradientText>
-            </Link>
+            </Link> */}
             <Link to="/create">
               <AnimatedGradientText className="text-xl">
                 🎮 <hr className="mx-2 h-8 w-[1px] shrink-0 bg-gray-300" />{" "}
