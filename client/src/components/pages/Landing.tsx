@@ -80,6 +80,7 @@ export function Landing() {
                                 <ChevronRight className="ml-1 size-6 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
                             </AnimatedGradientText>
                         </Link>
+
                         <Link to="/create">
                             <AnimatedGradientText className="text-xl">
                                 🎮{" "}

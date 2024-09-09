@@ -58,7 +58,6 @@ export function Game({
                 const res = await socket
                     .timeout(1000)
                     .emitWithAck("move", { move: cell.id })
-                console.log(res, sign)
                 if (res.status === 200) {
                     cell.innerText = sign
                     setTurn((turn) => !turn)

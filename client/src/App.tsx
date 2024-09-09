@@ -38,10 +38,10 @@ function App() {
             id: "",
             username: "",
         })
-        setSign("O")
+
+        setSign("")
         setTurn(false)
     }
-    useEffect(() => resetGame(), [])
     function gameJoinedHandler(data: GameJoinedEventType) {
         resetGame()
         setGameJoinedEvents((prev) => [...prev, data])
@@ -57,6 +57,7 @@ function App() {
     }) {
         if (id === socket.id) {
             setTurn(turn)
+
             setSign(sign)
         }
     }

@@ -5,6 +5,7 @@ export function GameHeading() {
         <>
             <div className="grid grid-flow-col items-center justify-center text-6xl font-bold md:text-8xl">
                 <div className="min-w-[150px] md:min-w-[240px]">
+
                     <WordRotate
                         className="text-end text-black dark:text-white"
                         words={["Tic", "Twist"]}
