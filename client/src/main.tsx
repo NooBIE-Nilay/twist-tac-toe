@@ -10,6 +10,5 @@ createRoot(document.getElementById("root")!).render(
       <App />
       <Toaster position="top-center" richColors />
     </div>
-    //{" "}
   </StrictMode>
 );

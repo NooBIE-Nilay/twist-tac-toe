@@ -43,7 +43,7 @@ export function Create({
       } else if (event.gameId === gameId && event.playersJoined >= 2) {
         console.log(
           event.username,
-          " Joined the game!\nRedirecting to game page..."
+          " Joined the game!\nRedirecting to game page...",
         );
         navigate(`/game/${gameId}`);
       }

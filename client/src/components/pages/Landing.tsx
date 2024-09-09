@@ -9,7 +9,7 @@ export function Landing() {
   return (
     <>
       <GameHeading />
-      <div className="flex justify-center  gap-12 mt-20 items-center px-10 ">
+      <div className=" justify-center  gap-12 mt-20 items-center px-10 flex">
         <ShineBorder
           className=" flex  h-[350px] w-[350px] justify-center items-center  rounded-lg border bg-background md:shadow-xl"
           color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
