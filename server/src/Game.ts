@@ -236,4 +236,14 @@ export class Game {
     }
     return false;
   }
+  isPlayer(id: string) {
+    return id === this.player1.id || id === this.player2.id;
+  }
+  getPlayer(id: string) {
+    return id === this.player1.id
+      ? this.player1
+      : id === this.player2.id
+      ? this.player2
+      : undefined;
+  }
 }

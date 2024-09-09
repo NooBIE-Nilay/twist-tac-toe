@@ -37,6 +37,30 @@ export class GameManager {
   }
 
   joinRandomGameHandler(data: { username: string }, client: Socket) {
+    if (this.randomPlayerWaiting.id === client.id) {
+      this.server.to(this.randomPlayerWaiting.gameId).emit("gameJoined", {
+        username: this.randomPlayerWaiting.username,
+        id: this.randomPlayerWaiting.id,
+        gameId: this.randomPlayerWaiting.gameId,
+        message: "Waiting For Another Player To Join!",
+        playersJoined: 1,
+      });
+      return;
+    }
+    //TODO: logic to send gameJoined Msg to the 2nd player who joins the game and send multiple requests
+    const game = this.games.find((game) => game.isPlayer(client.id));
+    if (game) {
+      const player = game.getPlayer(client.id);
+      if (!player) return;
+      this.server.to(player.gameId).emit("gameJoined", {
+        username: player.username,
+        id: player.id,
+        gameId: player.gameId,
+        message: "Another Player Joined!",
+        playersJoined: 2,
+      });
+      return;
+    }
     const username = data.username || "NooBIE";
     if (!this.randomPlayerWaiting.id) {
       const gameId = this.generateUniqueGameID();
