@@ -12,6 +12,10 @@ const gameManager = new GameManager();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 5 * 60 * 1000,
+    skipMiddlewares: true,
+  },
   cors: {
     origin: "http://localhost:5173",
   },

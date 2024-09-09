@@ -1,8 +1,27 @@
-import { Socket } from "socket.io";
-
-export function createRoomId(id1: string, id2: string) {
-  const length = 6;
-  const rand = (Math.random() * 10) % 6;
-  const roomId = id1.substring(0, rand) + id2.substring(0, length - rand);
-  return roomId;
+function generateGameId() {
+  return Math.random().toString(36).substring(5, 11).toUpperCase();
 }
+function generateUniqueGameID(gameIdList: string[]) {
+  let gameId;
+  do {
+    gameId = generateGameId();
+  } while (gameIdList.includes(gameId));
+  return gameId;
+}
+
+function generateRandomUsername() {
+  const names = [
+    "NooBIE",
+    "Edith",
+    "Avenger",
+    "Killer",
+    "Lucifer",
+    "Asthetic",
+    "Xzunheal",
+    "Nightmare",
+    "Stark",
+    "Mik",
+  ];
+  return names[Math.floor(Math.random() * 10)] + Math.floor(Math.random() * 23);
+}
+export { generateRandomUsername, generateUniqueGameID };

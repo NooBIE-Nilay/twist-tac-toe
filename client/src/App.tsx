@@ -34,16 +34,25 @@ function App() {
       id: "",
       username: "",
     });
-    setSign("");
+    setSign("O");
     setTurn(false);
   }
+  useEffect(() => resetGame(), []);
   function gameJoinedHandler(data: GameJoinedEventType) {
     resetGame();
     setGameJoinedEvents((prev) => [...prev, data]);
   }
-  function initHandler({ id, sign }: { id: string; sign: string }) {
+  function initHandler({
+    id,
+    sign,
+    turn,
+  }: {
+    id: string;
+    sign: string;
+    turn: boolean;
+  }) {
     if (id === socket.id) {
-      if (sign === "X") setTurn(true);
+      setTurn(turn);
       setSign(sign);
     }
   }

@@ -14,11 +14,6 @@ export function Game({
   turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   winEvent: { winner: string; id: string; message: string };
 }) {
-  useEffect(() => {
-    if ((sign = "")) {
-      console.log("Here");
-    }
-  }, []);
   const navigate = useNavigate();
   const { gameId } = useParams();
   const [turn, setTurn] = turnState;
@@ -61,6 +56,7 @@ export function Game({
         const res = await socket
           .timeout(1000)
           .emitWithAck("move", { move: cell.id });
+        console.log(res, sign);
         if (res.status === 200) {
           cell.innerText = sign;
           setTurn((turn) => !turn);

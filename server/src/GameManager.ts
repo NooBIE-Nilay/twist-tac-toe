@@ -1,59 +1,62 @@
 import { Server, Socket } from "socket.io";
 import { Game } from "./Game";
 import { User } from "./User";
-
-/**
- * Class representing a game manager.
- */
+import { generateRandomUsername, generateUniqueGameID } from "./lib/util";
 export class GameManager {
   private server: Server;
   private randomPlayerWaiting: User;
-  private pendingPlayer: User;
+  private playersWaiting: User[];
   private games: Game[];
   private rooms: string[];
   constructor() {
     this.randomPlayerWaiting = {} as User;
+    this.playersWaiting = [];
     this.server = {} as Server;
-    this.pendingPlayer = {} as User;
     this.games = [];
     this.rooms = [];
   }
-  generateGameId() {
-    return Math.random().toString(36).substring(5, 11).toUpperCase();
-  }
-  generateUniqueGameID() {
-    let gameId;
-    do {
-      gameId = this.generateGameId();
-    } while (this.rooms.includes(gameId));
-    return gameId;
-  }
-  /**
-   * Handles a new client connection
-   *
-   * @param server - The Socket.server server instance.
-   * @param client - The client.server new client socket.
-   */
   handleConnection(server: Server, client: Socket) {
     this.server = server;
-    client.on("disconnect", () => console.log(`${client.id} Disconnected\n`));
+    client.on("disconnect", () => {
+      if (this.randomPlayerWaiting.id === client.id) {
+        this.games = this.games.filter(
+          (game) => game.id != this.randomPlayerWaiting.gameId
+        );
+        this.rooms = this.rooms.filter(
+          (room) => room != this.randomPlayerWaiting.gameId
+        );
+        this.randomPlayerWaiting = {} as User;
+      }
+      this.playersWaiting = this.playersWaiting.filter(
+        (player) => player.id != client.id
+      );
+      this.games = this.games.filter((game) => {
+        const player = this.playersWaiting.find(
+          (player) => player.id === client.id
+        );
+        if (!player) return true;
+        game.id !== player.gameId;
+      });
+      this.rooms = this.rooms.filter((room) => {
+        const player = this.playersWaiting.find(
+          (player) => player.id === client.id
+        );
+        if (!player) return true;
+        room !== player.gameId;
+      });
+      console.log("Disconnected");
+      console.log(this.rooms);
+    });
     client.on("createGame", (data) => this.createGameHandler(data, client));
     client.on("joinGame", (data) => this.joinGameHandler(data, client));
     client.on("joinRandomGame", (data) =>
       this.joinRandomGameHandler(data, client)
     );
   }
-
-  /**
-   * Creates a new game.
-   *
-   * @param data - The data object containing the username.
-   * @param client - The socket object for the player.
-   */
   joinRandomGameHandler(data: { username: string }, client: Socket) {
     const username = data.username || "NooBIE";
     if (!this.randomPlayerWaiting.id) {
-      const gameId = this.generateUniqueGameID();
+      const gameId = generateUniqueGameID(this.rooms);
       this.randomPlayerWaiting = new User(client, username, gameId, client.id);
       this.randomPlayerWaiting.client.join(gameId);
       this.server.to(gameId).emit("gameJoined", {
@@ -97,39 +100,54 @@ export class GameManager {
     }
   }
   createGameHandler(data: { username: string }, client: Socket) {
+    const playerAlreadyWaiting = this.playersWaiting.find(
+      (playerWaiting) => playerWaiting.client === client
+    );
+    if (playerAlreadyWaiting) {
+      this.server.to(playerAlreadyWaiting.gameId).emit("gameJoined", {
+        username: playerAlreadyWaiting.username,
+        id: playerAlreadyWaiting.id,
+        gameId: playerAlreadyWaiting.gameId,
+        message: "Waiting For Another Player To Join!",
+        playersJoined: 1,
+      });
+      return;
+    }
     const username = data.username || "NooBIE";
-    const gameId = this.generateUniqueGameID();
-    this.pendingPlayer = new User(client, username, gameId, client.id);
-    this.pendingPlayer.client.join(gameId);
+    const gameId = generateUniqueGameID(this.rooms);
+    const player = new User(client, username, gameId, client.id);
+    player.client.join(gameId);
     this.server.to(gameId).emit("gameJoined", {
       username,
-      id: this.pendingPlayer.id,
+      id: player.id,
       gameId: gameId,
       message: "Waiting For Another Player To Join!",
       playersJoined: 1,
     });
+    this.playersWaiting.push(player);
     this.rooms.push(gameId);
   }
 
-  /**
-   * Joins a game with the provided game ID and username.
-   *
-   * @param data - The data object containing the game ID and username.
-   * @param client - The client object representing the client connectservern.
-   */
   joinGameHandler(data: { gameId: string; username: string }, client: Socket) {
     const { gameId, username = "NooBIE" } = data;
     if (this.rooms.includes(gameId)) {
-      const player = new User(client, username, gameId, client.id);
-      player.client.join(gameId);
+      const player = this.playersWaiting.find(
+        (player) => player.gameId === gameId
+      );
+      if (!player) return;
+      this.playersWaiting = this.playersWaiting.filter(
+        (p) => p.id !== player.id
+      );
+      const newPlayer = new User(client, username, gameId, client.id);
+      newPlayer.client.join(gameId);
       this.server.to(gameId).emit("gameJoined", {
         username,
-        id: player.id,
+        id: newPlayer.id,
         gameId,
         message: "Another Player Joined!",
         playersJoined: 2,
       });
-      const game = new Game(this.server, gameId, this.pendingPlayer, player);
+      const game = new Game(this.server, gameId, player, newPlayer);
       this.games.push(game);
       game.gameHandler();
     } else {
@@ -139,22 +157,15 @@ export class GameManager {
       });
     }
   }
-  /**
-   * Closes a game.
-   *
-   * @param data - The data object containing the gameId.
-   * @param data.gameId - The ID of the game to be closed.
-   */
   closeGame(data: { gameId: string }) {
     const { gameId } = data;
     if (this.rooms.includes(gameId)) {
       this.rooms = this.rooms.filter((room) => room !== gameId);
     }
     this.games = this.games.filter((game) => game.id !== gameId);
-    this.pendingPlayer = {} as User;
     console.log("Game Closed", gameId);
     console.log("Games: ", this.games.length, this.games);
     console.log("Rooms: ", this.rooms.length, this.rooms);
-    console.log("Pending Player: ", this.pendingPlayer);
+    console.log("Players Waiting", this.playersWaiting);
   }
 }

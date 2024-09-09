@@ -58,23 +58,17 @@ export class Game {
       this.player2.sign = "X";
       this.player1.sign = "O";
     }
-    // console.log(
-    //   "Game initialized",
-    //   this.id,
-    //   "Turn:",
-    //   this.turn.username,
-    //   "Random: ",
-    //   random
-    // );
     try {
       this.player1.client.emit("init", {
         username: this.player1.username,
         sign: this.player1.sign,
+        turn: this.player1.sign === "X" ? true : false,
         id: this.player1.client.id,
       });
       this.player2.client.emit("init", {
         username: this.player2.username,
         sign: this.player2.sign,
+        turn: this.player2.sign === "X" ? true : false,
         id: this.player2.client.id,
       });
     } catch (e) {
