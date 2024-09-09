@@ -12,7 +12,7 @@ import { GameJoinedEventType } from "../../common/types";
 
 function App() {
   const [username, setUsername] = useState(
-    "NooBIE_" + Math.floor(Math.random() * 100),
+    "NooBIE_" + Math.floor(Math.random() * 100)
   );
   const [sign, setSign] = useState("");
   const [turn, setTurn] = useState(false);
@@ -34,17 +34,22 @@ function App() {
       id: "",
       username: "",
     });
-    setSign("");
-    setTurn(false);
+    // setSign("");
+    // setTurn(false);
   }
   function gameJoinedHandler(data: GameJoinedEventType) {
     resetGame();
     setGameJoinedEvents((prev) => [...prev, data]);
   }
-  function initHandler({ id, sign }: { id: string; sign: string }) {
-    if (id === socket.id) {
-      if (sign === "X") setTurn(true);
-      setSign(sign);
+  function initHandler(data: { id: string; sign: string }) {
+    console.log("Init", data);
+    if (data.id === socket.id) {
+      setSign((sign) => {
+        console.log("Sign Updated  from ", sign, "to ", data.sign);
+        return data.sign;
+      });
+      if (data.sign === "X") setTurn(true);
+      else if (data.sign === "O") setTurn(false);
     }
   }
   function moveHandler(data: { move: string; id: string; username: string }) {

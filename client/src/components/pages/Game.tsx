@@ -14,14 +14,15 @@ export function Game({
   turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
   winEvent: { winner: string; id: string; message: string };
 }) {
-  useEffect(() => {
-    if ((sign = "")) {
-      console.log("Here");
-    }
-  }, []);
   const navigate = useNavigate();
   const { gameId } = useParams();
   const [turn, setTurn] = turnState;
+  useEffect(() => {
+    if (sign === "") {
+      sign = turn ? "X" : "O";
+    }
+    console.log("Game Rendered with sign", sign);
+  }, []);
   useEffect(() => {
     const cell = document.getElementById(moveEvent.move) || { innerText: "" };
     if (moveEvent.type === "move") {
