@@ -1,12 +1,12 @@
-import { ModeToggle } from "@/components/util/mode-toggle";
+import { ModeToggle } from "@/components/util/mode-toggle"
 
 export function Appbar({ username }: { username: string }) {
-  return (
-    <>
-      <div className="flex justify-end items-center">
-        <div className="text-base font-semi">{username}</div>
-        <ModeToggle />
-      </div>
-    </>
-  );
+    return (
+        <>
+            <div className="flex items-center justify-end">
+                <div className="font-semi text-base">{username}</div>
+                <ModeToggle />
+            </div>
+        </>
+    )
 }
