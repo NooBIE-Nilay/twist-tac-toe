@@ -38,11 +38,11 @@ function App() {
             id: "",
             username: "",
         })
-        // setSign("");
-        // setTurn(false);
+        setSign("")
+        setTurn(false)
     }
     function gameJoinedHandler(data: GameJoinedEventType) {
-        resetGame()
+        if (gameJoinedEvents.length === 0) resetGame()
         setGameJoinedEvents((prev) => [...prev, data])
     }
     function initHandler(data: { id: string; sign: string }) {
