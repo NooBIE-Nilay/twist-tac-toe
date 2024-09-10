@@ -2,6 +2,8 @@ import { socket } from "@/socket"
 import React, { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
+import { GameHeading } from "../GameHeading"
+import SparklesText from "../magicui/sparkles-text"
 
 export function Game({
     sign,
@@ -21,7 +23,6 @@ export function Game({
         if (sign === "") {
             sign = turn ? "X" : "O"
         }
-        console.log("Game Rendered with sign", sign)
     }, [])
     useEffect(() => {
         const cell = document.getElementById(moveEvent.move) || {
@@ -79,14 +80,17 @@ export function Game({
     }
     return (
         <div>
+            <GameHeading />
             {!winEvent.winner && (
-                <div className="flex flex-col items-center justify-center">
-                    <h1 className="text-2xl font-bold">GameId: {gameId}</h1>
-                    <h1 className="text-2xl font-semibold">
-                        Your Sign: {sign}
-                    </h1>
-                    <h1 className="text-2xl font-semibold">
-                        {turn ? "Your Turn" : "Opponent's Turn"}
+                <div className="mt-10 flex flex-row items-center justify-between px-8 text-3xl font-semibold md:px-28 md:text-5xl">
+                    {/* <h1 className="text-2xl font-bold">GameId: {gameId}</h1> */}
+                    <h1 className="text-fuchsia-500">Your Sign: {sign}</h1>
+                    <h1>
+                        {turn ? (
+                            <div className="text-cyan-400">Your Turn</div>
+                        ) : (
+                            <div className="text-rose-500">Opponents Turn</div>
+                        )}
                     </h1>
                 </div>
             )}
