@@ -8,11 +8,13 @@ import { GameHeading } from "@/components/GameHeading"
 export function Landing() {
     return (
         <>
-            <GameHeading />
+            <div className="flex w-full items-center justify-center">
+                <GameHeading />
+            </div>
             <div className="flex flex-col items-center justify-center md:mt-20 md:flex-row md:gap-12 md:px-10">
                 <div className="order-2 md:order-none">
                     <ShineBorder
-                        className="flex h-[350px] w-[350px] items-center justify-center rounded-lg border bg-background md:shadow-xl"
+                        className="flex items-center justify-center rounded-lg border bg-background md:h-[350px] md:w-[350px] md:shadow-xl"
                         color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
                     >
                         <svg
