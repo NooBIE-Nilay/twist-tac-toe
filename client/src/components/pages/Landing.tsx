@@ -66,7 +66,7 @@ export function Landing() {
                         </svg>
                     </ShineBorder>
                 </div>
-                <div className="order-1 flex h-[400px] w-[500px] flex-col items-center justify-center gap-6 md:order-none">
+                <div className="order-1 flex h-[380px] flex-col items-center justify-center gap-6 md:order-none md:w-[500px]">
                     <div className="z-10 flex flex-col items-center justify-center gap-6">
                         <Link to="/create_random">
                             <AnimatedGradientText className="w-full text-xl">
