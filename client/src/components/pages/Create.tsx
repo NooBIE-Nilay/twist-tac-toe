@@ -56,20 +56,20 @@ export function Create({
             <div className="flex justify-center">
                 <div>
                     <MagicCard
-                        className="top-[50%] h-[280px] w-[460px] cursor-pointer flex-col items-center justify-center whitespace-nowrap text-2xl shadow-2xl"
+                        className="top-[50%] h-[280px] cursor-pointer flex-col items-center justify-center whitespace-nowrap p-4 py-0 text-2xl shadow-2xl md:w-[460px]"
                         gradientColor={
                             theme === "dark" ? "#262626" : "#D9D9D955"
                         }
                     >
-                        <div className="flex max-w-[350px] flex-col gap-6 text-wrap">
-                            <span className="capitalize">
+                        <div className="flex flex-col items-center justify-center gap-6 text-wrap md:max-w-[350px]">
+                            <span className="text-xl capitalize md:text-2xl">
                                 Share this code with your friend:
                             </span>
-                            <div className="hover: flex h-[80px] w-[350px] items-center justify-center rounded-md bg-secondary">
+                            <div className="hover: flex h-[80px] w-[260px] items-center justify-center rounded-md bg-secondary md:w-[350px]">
                                 {isLoading ? (
                                     <Loading />
                                 ) : (
-                                    <div className="inline-flex items-center gap-x-3 text-3xl uppercase tracking-widest">
+                                    <div className="inline-flex items-center gap-x-3 text-2xl uppercase tracking-widest md:text-3xl">
                                         {" " + gameId}
                                         <CopyButton
                                             copyState={[
@@ -83,7 +83,9 @@ export function Create({
                             </div>
                         </div>
                         <div className="mt-3 flex items-center justify-center">
-                            <span className="text-xl">{message}</span>
+                            <span className="text-lg md:text-xl">
+                                {message}
+                            </span>
                         </div>
                     </MagicCard>
                 </div>
