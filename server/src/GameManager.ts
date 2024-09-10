@@ -15,6 +15,16 @@ export class GameManager {
     this.games = [];
     this.rooms = [];
   }
+  private logData() {
+    console.log("Games: ", this.games.length, this.games);
+    console.log("Rooms: ", this.rooms.length, this.rooms);
+    console.log(
+      "Pending Player: ",
+      this.pendingPlayers.length,
+      this.pendingPlayers.map((player) => player.username)
+    );
+    console.log("Random Player: ", this.randomPlayerWaiting);
+  }
   generateGameId() {
     return Math.random().toString(36).substring(5, 11).toUpperCase();
   }
@@ -137,6 +147,7 @@ export class GameManager {
 
   joinGameHandler(data: { gameId: string; username: string }, client: Socket) {
     const { gameId, username = "NooBIE" } = data;
+
     if (this.rooms.includes(gameId)) {
       const player = new User(client, username, gameId, client.id);
       player.client.join(gameId);
@@ -147,9 +158,12 @@ export class GameManager {
         message: "Another Player Joined!",
         playersJoined: 2,
       });
-      const pendingPlayer = this.pendingPlayers.find(
+      let pendingPlayer = this.pendingPlayers.find(
         (player) => player.gameId === gameId
       );
+      if (gameId === this.randomPlayerWaiting.gameId) {
+        pendingPlayer = this.randomPlayerWaiting;
+      }
       if (!pendingPlayer) {
         client.emit("error", {
           message: "Player not Found",
@@ -163,6 +177,9 @@ export class GameManager {
       this.pendingPlayers = this.pendingPlayers.filter(
         (player) => player.gameId !== gameId
       );
+      if (this.randomPlayerWaiting.gameId === gameId) {
+        this.randomPlayerWaiting = {} as User;
+      }
     } else {
       client.emit("error", {
         message: "Game ID not Found",
@@ -180,12 +197,6 @@ export class GameManager {
       (player) => player.gameId !== gameId
     );
     console.log("Game Closed", gameId);
-    console.log("Games: ", this.games.length, this.games);
-    console.log("Rooms: ", this.rooms.length, this.rooms);
-    console.log(
-      "Pending Player: ",
-      this.pendingPlayers.length,
-      this.pendingPlayers.map((player) => player.username)
-    );
+    this.logData();
   }
 }
