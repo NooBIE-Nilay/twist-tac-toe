@@ -1,3 +1,5 @@
+import { ConfettiEmojiHandler } from "../util/confetti-emoji-handler"
+
 export default function Colors() {
     return (
         <div className="rado grid grid-cols-2 grid-rows-2">
@@ -46,6 +48,11 @@ export default function Colors() {
             <div className="rado h-[100px] w-[100%] bg-border">Border</div>
             <div className="rado h-[100px] w-[100%] bg-input">Input</div>
             <div className="h-[100px] w-[100%] bg-ring text-white">Ring</div>
+            <button
+                onClick={() => ConfettiEmojiHandler(["💩", "🧻", "🚽", "🤮"])}
+            >
+                Test
+            </button>
         </div>
     )
 }

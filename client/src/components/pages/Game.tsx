@@ -1,10 +1,11 @@
 import { socket } from "@/socket"
 import React, { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { GameHeading } from "../GameHeading"
 import SparklesText from "../magicui/sparkles-text"
-
+import { confettiFireworksHandler } from "../util/confetti-fireworks-handler"
+import { ConfettiEmojiHandler } from "../util/confetti-emoji-handler"
 export function Game({
     sign,
     moveEvent,
@@ -16,8 +17,8 @@ export function Game({
     turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
     winEvent: { winner: string; id: string; message: string }
 }) {
+    let interval: NodeJS.Timeout
     const navigate = useNavigate()
-    const { gameId } = useParams()
     const [turn, setTurn] = turnState
     useEffect(() => {
         if (sign === "") {
@@ -36,11 +37,10 @@ export function Game({
     }, [moveEvent])
     useEffect(() => {
         if (!winEvent.winner || winEvent.winner === "") return
-        console.log(winEvent)
-        let dur = 5
+        let dur = 10
         toast.info(winEvent.message, {})
         const id = toast.info(`Redirecting in ${dur} Seconds`)
-        const interval = setInterval(() => {
+        interval = setInterval(() => {
             dur--
             toast.info(`Redirecting in ${dur} Seconds`, { id: id })
             if (dur === 0) {
@@ -56,6 +56,9 @@ export function Game({
                 cell.style.cursor = "not-allowed"
             }
         }
+
+        if (winEvent.id === socket.id) confettiFireworksHandler()
+        else ConfettiEmojiHandler(["💩", "🧻", "🚽", "🤮"])
     }, [winEvent])
     async function moveListener(event: any) {
         if (winEvent.winner) return
@@ -82,9 +85,8 @@ export function Game({
         <div>
             <GameHeading />
             {!winEvent.winner && (
-                <div className="mt-10 flex flex-row items-center justify-between px-8 text-3xl font-semibold md:px-28 md:text-5xl">
-                    {/* <h1 className="text-2xl font-bold">GameId: {gameId}</h1> */}
-                    <h1 className="text-fuchsia-500">Your Sign: {sign}</h1>
+                <div className="mt-10 flex flex-row items-center justify-between px-8 text-3xl md:px-28 md:text-5xl">
+                    <h1 className="text-fuchsia-400">Your Sign: {sign}</h1>
                     <h1>
                         {turn ? (
                             <div className="text-cyan-400">Your Turn</div>
@@ -95,21 +97,115 @@ export function Game({
                 </div>
             )}
             {winEvent.winner && (
-                <h1>{winEvent.id === socket.id ? "You Won!" : "Game Over!"}</h1>
+                <div className="justify-cente mt-8 flex flex-col items-center gap-9">
+                    <SparklesText
+                        className="text-3xl md:text-5xl"
+                        text={
+                            winEvent.id === socket.id
+                                ? "You Won!"
+                                : "Game Over! Better Luck Next Timehy"
+                        }
+                    />
+                    <Link
+                        className="text-xl hover:text-cyan-300 md:text-3xl"
+                        to={"/"}
+                        onClick={() => {
+                            clearInterval(interval)
+                            toast.dismiss()
+                        }}
+                    >
+                        Return To Home Screen
+                    </Link>
+                </div>
             )}
             <div className="mt-[10%] flex justify-center">
-                <div>
+                <div className="bg-primary-300 p-10">
                     <div className="items-centers grid grid-cols-3 justify-center gap-0">
-                        {Array(9)
-                            .fill(0)
-                            .map((_, i) => (
-                                <div
-                                    className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center border-2 border-solid border-primary text-center text-2xl"
-                                    key={i}
-                                    id={i.toString()}
-                                    onClick={moveListener}
-                                ></div>
-                            ))}
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="0"
+                                id="0"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 rounded-t-lg bg-ring/95"></div>
+                            <div className="absolute bottom-0 h-3 w-full rounded-l-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="1"
+                                id="1"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 rounded-t-lg bg-ring/95"></div>
+                            <div className="absolute bottom-0 h-3 w-full bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="2"
+                                id="2"
+                                onClick={moveListener}
+                            ></div>
+
+                            <div className="absolute bottom-0 h-3 w-full rounded-r-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="3"
+                                id="3"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 bg-ring/95"></div>
+                            <div className="absolute bottom-0 h-3 w-full rounded-l-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="4"
+                                id="4"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 bg-ring/95"></div>
+                            <div className="absolute bottom-0 h-3 w-full bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pb-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="5"
+                                id="5"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute bottom-0 h-3 w-full rounded-r-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="6"
+                                id="6"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 rounded-b-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center pr-3 text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="7"
+                                id="7"
+                                onClick={moveListener}
+                            ></div>
+                            <div className="absolute right-0 h-full w-3 rounded-b-lg bg-ring/95"></div>
+                        </div>
+                        <div className="relative flex">
+                            <div
+                                className="cells flex h-[68px] w-[68px] cursor-pointer items-center justify-center text-center text-2xl md:h-[108px] md:w-[108px] md:text-5xl"
+                                key="8"
+                                id="8"
+                                onClick={moveListener}
+                            ></div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ export function Appbar({ username }: { username: string }) {
     return (
         <>
             <div className="flex items-center justify-end">
-                <div className="font-semi text-base">{username}</div>
+                <div className="font-semi text-base">Welcome, {username}</div>
                 <ModeToggle />
             </div>
         </>
