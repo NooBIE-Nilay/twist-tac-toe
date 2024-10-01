@@ -11,9 +11,7 @@ import { socket } from "./socket"
 import { GameJoinedEventType } from "../../common/types"
 
 function App() {
-    const [username, setUsername] = useState(
-        "NooBIE_" + Math.floor(Math.random() * 100),
-    )
+    const username = "NooBIE_" + Math.floor(Math.random() * 100)
     const [sign, setSign] = useState("")
     const [turn, setTurn] = useState(false)
     const [gameJoinedEvents, setGameJoinedEvents] = useState<
