@@ -1,3 +1,4 @@
+//  TODO: Compare Moves with Board State, and add a api endpoint to check Board State & update if required.
 import { socket } from "@/socket"
 import React, { useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"

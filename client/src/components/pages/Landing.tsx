@@ -41,7 +41,7 @@ export function Landing() {
                         </Tooltip>
                     </TooltipProvider>
                 </div>
-                <div className="md:hidden min-h-[108px]">
+                <div className="min-h-[108px] md:hidden">
                     <WordRotate
                         className="text-xl text-black dark:text-white"
                         words={[
