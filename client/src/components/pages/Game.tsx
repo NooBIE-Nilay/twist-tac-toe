@@ -85,7 +85,7 @@ export function Game({
         <div>
             <GameHeading />
             {!winEvent.winner && (
-                <div className="mt-10 flex flex-row items-center justify-between px-8 text-3xl md:px-28 md:text-5xl">
+                <div className="mt-10 flex flex-row items-center justify-between px-8 text-xl md:px-28 md:text-5xl">
                     <h1 className="text-fuchsia-400">Your Sign: {sign}</h1>
                     <h1>
                         {turn ? (
@@ -99,11 +99,11 @@ export function Game({
             {winEvent.winner && (
                 <div className="justify-cente mt-8 flex flex-col items-center gap-9">
                     <SparklesText
-                        className="text-3xl md:text-5xl"
+                        className="text-xl md:text-5xl"
                         text={
                             winEvent.id === socket.id
                                 ? "You Won!"
-                                : "Game Over! Better Luck Next Timehy"
+                                : "Game Over! Better Luck Next Time"
                         }
                     />
                     <Link

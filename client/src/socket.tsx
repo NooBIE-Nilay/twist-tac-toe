@@ -1,5 +1,6 @@
 import { io } from "socket.io-client"
 
-const URL = "http://localhost:8080"
+//const URL = "https://localhost:3001"
+const URL = "https://api.nilaycodes.in"
 
 export const socket = io(URL)

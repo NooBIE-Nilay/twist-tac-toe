@@ -34,6 +34,7 @@ export function Join({
     }, [events])
     function joinGame() {
         if (!socket.connected) socket.connect()
+	setGameId(gameId.trim().toUpperCase())
         if (!gameId) {
             setIsError(true)
             setErrorMsg("Please Enter A Game Code!")
