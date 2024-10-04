@@ -16,7 +16,9 @@ export function Join({
     username: string
     events: GameJoinedEventType[]
 }) {
-    const [gameId, setGameId] = useState(useParams().joinId || "")
+    const [gameId, setGameId] = useState(
+        useParams().joinId?.toUpperCase() || "",
+    )
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState(false)
     const [errorMsg, setErrorMsg] = useState("")
@@ -34,7 +36,6 @@ export function Join({
     }, [events])
     function joinGame() {
         if (!socket.connected) socket.connect()
-	setGameId(gameId.trim().toUpperCase())
         if (!gameId) {
             setIsError(true)
             setErrorMsg("Please Enter A Game Code!")
@@ -78,7 +79,7 @@ export function Join({
                                 <div className="">
                                     <InputCodePattern
                                         setCode={setGameId}
-                                        value={gameId}
+                                        value={gameId.toUpperCase()}
                                     />
                                 </div>
                                 <div>
