@@ -18,10 +18,12 @@ function App() {
         GameJoinedEventType[]
     >([])
     const [moveEvent, setMoveEvent] = useState({
-        type: "",
         move: "",
         id: "",
         username: "",
+    })
+    const [removeEvent, setRemoveEvent] = useState({
+        move: "",
     })
     const [winEvent, setWinEvent] = useState({
         winner: "",
@@ -31,7 +33,6 @@ function App() {
     function resetGame() {
         setWinEvent({ winner: "", id: "", message: "" })
         setMoveEvent({
-            type: "",
             move: "",
             id: "",
             username: "",
@@ -56,17 +57,13 @@ function App() {
     }
     function moveHandler(data: { move: string; id: string; username: string }) {
         if (socket.id !== data.id) {
-            setMoveEvent({ ...data, type: "move" })
+            setMoveEvent({ ...data })
             setTurn((turn) => !turn)
         }
     }
-    function removeHandler(data: {
-        move: string
-        id: string
-        username: string
-    }) {
+    function removeHandler(data: { move: string }) {
         console.log("Remove", data)
-        setMoveEvent({ ...data, type: "remove" })
+        setRemoveEvent({ ...data })
     }
     function winHandler(data: { winner: string; id: string; message: string }) {
         setWinEvent(data)
@@ -151,6 +148,7 @@ function App() {
                                 <Game
                                     sign={sign}
                                     moveEvent={moveEvent}
+                                    removeEvent={removeEvent}
                                     turnState={[turn, setTurn]}
                                     winEvent={winEvent}
                                 />

@@ -1,6 +1,5 @@
 import { io } from "socket.io-client"
-
-//const URL = "https://localhost:3001"
-const URL = "https://api.nilaycodes.in"
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const URL = `${BACKEND_URL || "http://localhost:8080"}`
 
 export const socket = io(URL)

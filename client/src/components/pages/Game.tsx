@@ -10,11 +10,13 @@ import { ConfettiEmojiHandler } from "../util/confetti-emoji-handler"
 export function Game({
     sign,
     moveEvent,
+    removeEvent,
     turnState,
     winEvent,
 }: {
     sign: string
-    moveEvent: { move: string; id: string; username: string; type: string }
+    moveEvent: { move: string; id: string; username: string }
+    removeEvent: { move: string }
     turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
     winEvent: { winner: string; id: string; message: string }
 }) {
@@ -30,12 +32,14 @@ export function Game({
         const cell = document.getElementById(moveEvent.move) || {
             innerText: "",
         }
-        if (moveEvent.type === "move") {
-            cell.innerText = sign === "X" ? "O" : "X"
-        } else if (moveEvent.type === "remove") {
-            cell.innerText = ""
-        }
+        cell.innerText = sign === "X" ? "O" : "X"
     }, [moveEvent])
+    useEffect(() => {
+        const cell = document.getElementById(removeEvent.move) || {
+            innerText: "",
+        }
+        cell.innerText = ""
+    }, [removeEvent])
     useEffect(() => {
         if (!winEvent.winner || winEvent.winner === "") return
         let dur = 10
