@@ -24,11 +24,17 @@ export function Join({
     const [errorMsg, setErrorMsg] = useState("")
     const navigate = useNavigate()
     const { theme } = useTheme()
-
+    let timeoutId: NodeJS.Timeout
+    useEffect(() => {
+        if (gameId.length === 6) joinGame()
+    }, [gameId])
     useEffect(() => {
         events.forEach((event) => {
             console.log(event)
-            if (event.id === socket.id && gameId === event.gameId) {
+            if (
+                event.id === socket.id &&
+                gameId.toUpperCase() === event.gameId.toUpperCase()
+            ) {
                 setIsLoading(false)
                 navigate(`/game/${event.gameId}`)
             }
@@ -48,7 +54,7 @@ export function Join({
         setIsLoading(true)
         setIsError(false)
         socket.emit("joinGame", { username, gameId: gameId.toUpperCase() })
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
             setIsLoading(false)
             setIsError(true)
             setErrorMsg("GameID not found")
@@ -76,7 +82,11 @@ export function Join({
                                 Enter Game Code:
                             </span>
                             <div className="flex flex-col items-center justify-center gap-4 md:inline-flex md:flex-row">
-                                <div>
+                                <div
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") joinGame()
+                                    }}
+                                >
                                     <InputCodePattern
                                         setCode={setGameId}
                                         value={gameId.toUpperCase()}
