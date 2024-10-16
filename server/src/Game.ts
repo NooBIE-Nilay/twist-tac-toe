@@ -283,6 +283,9 @@ export class Game {
             id: player.client.id,
             username: player.username,
           });
+          let lastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
+          console.log("Last Move Time: ", lastMoveTimeInSeconds);
+          this.server.to(this.id).emit("time", { lastMoveTimeInSeconds });
         } catch (e) {
           console.error(e);
         }

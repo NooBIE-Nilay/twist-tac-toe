@@ -17,6 +17,7 @@ function App() {
     const [gameJoinedEvents, setGameJoinedEvents] = useState<
         GameJoinedEventType[]
     >([])
+    const [timeEvent, setTimeEvent] = useState({ lastMoveTimeInSeconds: 0 })
     const [moveEvent, setMoveEvent] = useState({
         move: "",
         id: "",
@@ -37,6 +38,7 @@ function App() {
             id: "",
             username: "",
         })
+        setTimeEvent({ lastMoveTimeInSeconds: 0 })
         setSign("")
         setTurn(false)
     }
@@ -70,9 +72,16 @@ function App() {
         console.log(data.message)
         setGameJoinedEvents([])
     }
-
+    function timeHandler(data: { lastMoveTimeInSeconds: number }) {
+        setTimeEvent(data)
+        console.log("Time", timeEvent)
+    }
     useEffect(() => {
         if (!socket.connected) socket.connect()
+        socket.on("time", timeHandler)
+        return () => {
+            socket.off("time", timeHandler)
+        }
     }, [gameJoinedEvents, moveEvent])
     useEffect(() => {
         socket.on("gameJoined", gameJoinedHandler)
@@ -151,6 +160,7 @@ function App() {
                                     removeEvent={removeEvent}
                                     turnState={[turn, setTurn]}
                                     winEvent={winEvent}
+                                    timeEvent={timeEvent}
                                 />
                             }
                         />

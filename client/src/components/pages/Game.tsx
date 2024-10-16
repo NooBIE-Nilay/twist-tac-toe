@@ -1,25 +1,32 @@
 //  TODO: Compare Moves with Board State, and add a api endpoint to check Board State & update if required.
 import { socket } from "@/socket"
-import React, { useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { GameHeading } from "../GameHeading"
 import SparklesText from "../magicui/sparkles-text"
 import { confettiFireworksHandler } from "../util/confetti-fireworks-handler"
 import { ConfettiEmojiHandler } from "../util/confetti-emoji-handler"
+import { truncate } from "fs"
+import { Timer } from "../Timer"
 export function Game({
     sign,
     moveEvent,
     removeEvent,
     turnState,
     winEvent,
+    timeEvent,
 }: {
     sign: string
     moveEvent: { move: string; id: string; username: string }
     removeEvent: { move: string }
     turnState: [boolean, React.Dispatch<React.SetStateAction<boolean>>]
     winEvent: { winner: string; id: string; message: string }
+    timeEvent: { lastMoveTimeInSeconds: number }
 }) {
+    // const [lastMoveTimeInSeconds, setLastMoveTimeInSeconds] = useState(
+    //     timeEvent.lastMoveTimeInSeconds,
+    // )
     let interval: NodeJS.Timeout
     const navigate = useNavigate()
     const [turn, setTurn] = turnState
@@ -28,6 +35,9 @@ export function Game({
             sign = turn ? "X" : "O"
         }
     }, [])
+    // useEffect(() => {
+    //     setLastMoveTimeInSeconds(timeEvent.lastMoveTimeInSeconds)
+    // }, [timeEvent])
     useEffect(() => {
         const cell = document.getElementById(moveEvent.move) || {
             innerText: "",
@@ -123,6 +133,9 @@ export function Game({
                     </Link>
                 </div>
             )}
+            <div className="text-xl">
+                <Timer timeEvent={timeEvent} />
+            </div>
             <div className="mt-[10%] flex justify-center">
                 <div className="bg-primary-300 p-10">
                     <div className="items-centers grid grid-cols-3 justify-center gap-0">
