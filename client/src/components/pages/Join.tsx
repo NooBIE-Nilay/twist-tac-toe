@@ -24,7 +24,6 @@ export function Join({
     const [errorMsg, setErrorMsg] = useState("")
     const navigate = useNavigate()
     const { theme } = useTheme()
-    let timeoutId: NodeJS.Timeout
     useEffect(() => {
         if (gameId.length === 6) joinGame()
     }, [gameId])
@@ -54,7 +53,7 @@ export function Join({
         setIsLoading(true)
         setIsError(false)
         socket.emit("joinGame", { username, gameId: gameId.toUpperCase() })
-        timeoutId = setTimeout(() => {
+        setTimeout(() => {
             setIsLoading(false)
             setIsError(true)
             setErrorMsg("GameID not found")
