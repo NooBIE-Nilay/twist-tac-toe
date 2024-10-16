@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { User } from "./User";
 import { removeGame } from ".";
-
+const TIMEOUT_DURATION = 15;
 export class Game {
   server: Server;
   id: string;
@@ -11,7 +11,8 @@ export class Game {
   private board: string[];
   private queueX: number[];
   private queueO: number[];
-
+  private lastMoveTime: number;
+  private intervalID: NodeJS.Timeout;
   constructor(server: Server, id: string, player1: User, player2: User) {
     this.server = server;
     this.turn = player1;
@@ -21,6 +22,34 @@ export class Game {
     this.queueX = [];
     this.player1 = player1;
     this.player2 = player2;
+    this.lastMoveTime = Date.now();
+    console.log("Constuctor: ", Date.now() - this.lastMoveTime / 1000);
+    this.intervalID = setInterval(() => {
+      let LastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
+      console.log("Last Move Time: ", LastMoveTimeInSeconds);
+      this.server.to(this.id).emit("time", { LastMoveTimeInSeconds });
+      if ((Date.now() - this.lastMoveTime) / 1000 >= TIMEOUT_DURATION) {
+        console.log("Game destroyed due to inactivity");
+        try {
+          this.server.to(this.id).emit("win", {
+            winner: (this.player1 === this.turn ? this.player2 : this.player1)
+              .username,
+            id: (this.player1 === this.turn ? this.player2 : this.player1)
+              .client.id,
+            message: `Winner is ${
+              (this.player1 === this.turn ? this.player2 : this.player1)
+                .username
+            } ${
+              (this.player1 === this.turn ? this.player2 : this.player1).sign
+            } due to inactivity`,
+            timeout: true,
+          });
+          this.destroyGame();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }, 5000);
     if (player1 === undefined || player2 === undefined) {
       console.log("Cannot Create Game, User Invalid!");
       console.log("Player1:", player1, "Player2:", player2);
@@ -36,6 +65,7 @@ export class Game {
     );
     this.initGame();
   }
+
   destroyGame() {
     console.log("Game destroyed", this.id);
     removeGame(this.id);
@@ -131,6 +161,7 @@ export class Game {
             winner: this.turn.username,
             id: this.turn.client.id,
             message: `Winner is ${this.turn.username} ${this.turn.sign}`,
+            timeout: false,
           });
           this.destroyGame();
           return;
@@ -220,6 +251,37 @@ export class Game {
     if (this.isTurn(player)) {
       if (this.isValid(player, data.move)) {
         console.log(player.sign, "Marked", data.move);
+        this.lastMoveTime = Date.now();
+        clearInterval(this.intervalID);
+        this.intervalID = setInterval(() => {
+          let LastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
+          console.log("Last Move Time: ", LastMoveTimeInSeconds);
+          this.server.to(this.id).emit("time", { LastMoveTimeInSeconds });
+          if ((Date.now() - this.lastMoveTime) / 1000 >= TIMEOUT_DURATION) {
+            console.log("Game destroyed due to inactivity");
+            try {
+              this.server.to(this.id).emit("win", {
+                winner: (this.player1 === this.turn
+                  ? this.player2
+                  : this.player1
+                ).username,
+                id: (this.player1 === this.turn ? this.player2 : this.player1)
+                  .client.id,
+                message: `Winner is ${
+                  (this.player1 === this.turn ? this.player2 : this.player1)
+                    .username
+                } ${
+                  (this.player1 === this.turn ? this.player2 : this.player1)
+                    .sign
+                } due to inactivity`,
+                timeout: true,
+              });
+              this.destroyGame();
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }, 5000);
         try {
           player.client.to(this.id).emit("move", {
             move: data.move,
