@@ -25,9 +25,9 @@ export class Game {
     this.lastMoveTime = Date.now();
     console.log("Constuctor: ", Date.now() - this.lastMoveTime / 1000);
     this.intervalID = setInterval(() => {
-      let LastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
-      console.log("Last Move Time: ", LastMoveTimeInSeconds);
-      this.server.to(this.id).emit("time", { LastMoveTimeInSeconds });
+      let lastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
+      console.log("Last Move Time: ", lastMoveTimeInSeconds);
+      this.server.to(this.id).emit("time", { lastMoveTimeInSeconds });
       if ((Date.now() - this.lastMoveTime) / 1000 >= TIMEOUT_DURATION) {
         console.log("Game destroyed due to inactivity");
         try {
@@ -249,9 +249,9 @@ export class Game {
         this.lastMoveTime = Date.now();
         clearInterval(this.intervalID);
         this.intervalID = setInterval(() => {
-          let LastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
-          console.log("Last Move Time: ", LastMoveTimeInSeconds);
-          this.server.to(this.id).emit("time", { LastMoveTimeInSeconds });
+          let lastMoveTimeInSeconds = (Date.now() - this.lastMoveTime) / 1000;
+          console.log("Last Move Time: ", lastMoveTimeInSeconds);
+          this.server.to(this.id).emit("time", { lastMoveTimeInSeconds });
           if ((Date.now() - this.lastMoveTime) / 1000 >= TIMEOUT_DURATION) {
             console.log("Game destroyed due to inactivity");
             try {
