@@ -62,14 +62,6 @@ module.exports = {
                 sm: "calc(var(--radius) - 4px)",
             },
             keyframes: {
-                countdown: {
-                    from: {
-                        strokeDashoffset: "0px",
-                    },
-                    to: {
-                        strokeDashoffset: "113px",
-                    },
-                },
                 "caret-blink": {
                     "0%,70%,100%": { opacity: "1" },
                     "20%,50%": { opacity: "0" },
@@ -124,7 +116,6 @@ module.exports = {
                 },
             },
             animation: {
-                countdown: "countdown 15s linear infinite forwards",
                 "caret-blink": "caret-blink 1.25s ease-out infinite",
                 gradient: "gradient 8s linear infinite",
                 "spin-around":
