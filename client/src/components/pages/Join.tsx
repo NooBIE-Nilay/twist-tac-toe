@@ -47,7 +47,7 @@ export function Join({
         }
         setIsLoading(true)
         setIsError(false)
-        socket.emit("joinGame", { username, gameId })
+        socket.emit("joinGame", { username, gameId: gameId.toUpperCase() })
         setTimeout(() => {
             setIsLoading(false)
             setIsError(true)
@@ -76,7 +76,7 @@ export function Join({
                                 Enter Game Code:
                             </span>
                             <div className="flex flex-col items-center justify-center gap-4 md:inline-flex md:flex-row">
-                                <div className="">
+                                <div>
                                     <InputCodePattern
                                         setCode={setGameId}
                                         value={gameId.toUpperCase()}
