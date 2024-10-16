@@ -44,6 +44,7 @@ export class Game {
             } due to inactivity`,
             timeout: true,
           });
+
           this.destroyGame();
         } catch (e) {
           console.error(e);
@@ -68,6 +69,7 @@ export class Game {
 
   destroyGame() {
     console.log("Game destroyed", this.id);
+    clearInterval(this.intervalID);
     removeGame(this.id);
     this.player1.client.leave(this.id);
     this.player2.client.leave(this.id);
@@ -88,14 +90,6 @@ export class Game {
       this.player2.sign = "X";
       this.player1.sign = "O";
     }
-    // console.log(
-    //   "Game initialized",
-    //   this.id,
-    //   "Turn:",
-    //   this.turn.username,
-    //   "Random: ",
-    //   random
-    // );
     try {
       this.player1.client.emit("init", {
         username: this.player1.username,
@@ -163,6 +157,7 @@ export class Game {
             message: `Winner is ${this.turn.username} ${this.turn.sign}`,
             timeout: false,
           });
+
           this.destroyGame();
           return;
         } catch (e) {
