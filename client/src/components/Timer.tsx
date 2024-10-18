@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react"
 import AnimatedCircularProgressBar from "./ui/animated-circular-progress-bar"
 
-export function Timer(props: { timeEvent: any; turn: boolean }) {
+export function Timer({
+    timeEvent,
+    turn,
+    duration = 15,
+}: {
+    timeEvent: any
+    turn: boolean
+    duration?: number
+}) {
     const [timeLeft, setTimeLeft] = useState(
-        15 - Math.round(props.timeEvent.lastMoveTimeInSeconds),
+        duration - Math.round(timeEvent.lastMoveTimeInSeconds),
     )
     if (timeLeft < 0) setTimeLeft(0)
-    if (timeLeft > 15) setTimeLeft(15)
+    if (timeLeft > duration) setTimeLeft(duration)
     useEffect(() => {
-        setTimeLeft(15 - Math.round(props.timeEvent.lastMoveTimeInSeconds))
-    }, [props.timeEvent])
+        setTimeLeft(duration - Math.round(timeEvent.lastMoveTimeInSeconds))
+    }, [timeEvent])
     useEffect(() => {
         const timer = setInterval(() => {
             setTimeLeft((timeLeft) => timeLeft - 1)
@@ -20,19 +28,19 @@ export function Timer(props: { timeEvent: any; turn: boolean }) {
         <>
             <AnimatedCircularProgressBar
                 className="mt-10 h-32 w-32 md:h-40 md:w-40"
-                max={15}
+                max={duration}
                 min={0}
                 value={timeLeft}
                 gaugePrimaryColor={
                     timeLeft <= 10
                         ? timeLeft <= 5
-                            ? props.turn
+                            ? turn
                                 ? "#ef4444ff"
                                 : "#ef44449f"
-                            : props.turn
+                            : turn
                               ? "#fbbf24ff"
                               : "#fbbf249f"
-                        : props.turn
+                        : turn
                           ? "#16a34aff"
                           : "#16a34a9f"
                 }
