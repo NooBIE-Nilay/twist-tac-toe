@@ -7,7 +7,7 @@ import { GameHeading } from "@/components/GameHeading"
 import { useEffect } from "react"
 import { toast } from "sonner"
 
-import o_z from "../../assets/o_z.gif"
+import o_x from "../../assets/o_x.gif"
 import {
     Tooltip,
     TooltipContent,
@@ -59,7 +59,7 @@ export function Landing() {
                         color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
                     >
                         <img
-                            src={o_z}
+                            src={o_x}
                             alt="twist_tac_toe.gif"
                             className="h-[350px] w-[350px] p-6 invert dark:invert-0 md:p-4"
                         />
